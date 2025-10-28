@@ -12,3 +12,5 @@ wheels/
 
 # cache
 tmp/
+database.py
+chroma_db/

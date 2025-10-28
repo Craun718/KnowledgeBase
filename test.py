@@ -9,7 +9,9 @@ from langchain_community.document_loaders import PDFPlumberLoader
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from database import embedding_record, insert_embedding
 from utils.cache import cache
+from utils.embedding import create_embedding
 
 load_dotenv()
 pdf_path = Path("./nke-10k-2023.pdf")
@@ -46,24 +48,20 @@ def get_splitter_docs(file_path: Path) -> list[Document]:
     return all_splits
 
 
-@cache.memoize()
-def create_embeddings(content: str):
-    # 1024 dimensions
-    url = "https://api.siliconflow.cn/v1/embeddings"
-    token = os.getenv("siliconflow_token")
-    payload = {
-        "model": "BAAI/bge-large-zh-v1.5",
-        "input": content,
-    }
-
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-
-    response = requests.post(url, json=payload, headers=headers)
-
-    print(response.json())
-
-
 if __name__ == "__main__":
     splites = get_splitter_docs(pdf_path)
     for splite in splites:
-        create_embeddings(splite.page_content)
+        embedding = create_embedding(splite.page_content)
+
+        if not embedding:
+            assert False, "embedding 创建失败"
+
+        insert_embedding(
+            embedding_record(
+                text=splite.page_content,
+                embedding=embedding,
+                metadata=str(splite.metadata),
+            )
+        )
+        print("插入成功")
+        break  # just test one
