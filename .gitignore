@@ -17,3 +17,5 @@ chroma_db/
 assets/
 
 logs/
+
+models/

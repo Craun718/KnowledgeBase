@@ -16,6 +16,7 @@ from langchain_classic.embeddings.base import Embeddings as LangChainEmbeddings
 from langchain_classic.storage import LocalFileStore
 from tqdm import tqdm
 from utils.cache import cache
+from utils.hash import make_hash
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ class SiliconFlowEmbeddings(LangChainEmbeddings):
     """自定义 SiliconFlow embedding 类，兼容 LangChain 接口"""
 
     def __init__(self):
-        self.model = "BAAI/bge-large-zh-v1.5"
+        self.model = "BAAI/bge-m3"
         self.base_url = "https://api.siliconflow.cn/v1"
         self.api_key = os.getenv("siliconflow_token")
 
@@ -46,10 +47,13 @@ class SiliconFlowEmbeddings(LangChainEmbeddings):
 
         response = requests.post(url, json=payload, headers=headers)
         if not response.ok:
-            print(response.status_code, response.text)
-            raise Exception(f"embedding 创建失败!")
+            raise Exception(response.text)
 
         data = response.json()
+        message = data.get("message")
+        if message:
+            assert False, f"Embedding API error: {message}"
+
         return [item["embedding"] for item in data["data"]] if data["data"] else []
 
     def embed_query(self, text: str) -> List[float]:
@@ -60,7 +64,9 @@ class SiliconFlowEmbeddings(LangChainEmbeddings):
 # 创建带缓存的 embedding 实例
 underlying_embeddings = SiliconFlowEmbeddings()
 cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
-    underlying_embeddings, store, namespace="siliconflow_embeddings"
+    underlying_embeddings,
+    store,
+    key_encoder=make_hash,
 )
 
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
