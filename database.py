@@ -4,6 +4,7 @@ import chromadb
 import uuid
 
 from chromadb import Documents, EmbeddingFunction, Embeddings
+from chromadb.errors import NotFoundError
 from chromadb.api.types import Embedding
 import numpy as np
 from utils.embedding import create_embedding
@@ -23,8 +24,13 @@ class siliconflow_embeddingFunction(EmbeddingFunction):
 
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
 
-collection = chroma_client.get_collection("my_collection")
-if not collection:
+try:
+    collection = chroma_client.get_collection("my_collection")
+    if not collection:
+        collection = chroma_client.create_collection(
+            name="my_collection", embedding_function=siliconflow_embeddingFunction()
+        )
+except NotFoundError:
     collection = chroma_client.create_collection(
         name="my_collection", embedding_function=siliconflow_embeddingFunction()
     )
@@ -40,6 +46,12 @@ class document_record:
         else:
             raise ValueError("Metadata must be either a string or a dictionary.")
 
+    def __dict__(self):
+        return {
+            "content": self.content,
+            "metadata": json.loads(self.metadata),
+        }
+
 
 def insert_embedding(doc: document_record) -> str:
     existing_docs = collection.get(where={"metadata": {"$eq": doc.metadata}})
@@ -53,3 +65,23 @@ def insert_embedding(doc: document_record) -> str:
         metadatas=[{"metadata": doc.metadata}],
     )
     return id
+
+
+def similarity_search(query: str, limit: int = 5) -> List[document_record]:
+    query_embedding = siliconflow_embeddingFunction()([query])[0]
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=limit,
+    )
+    if (not results["documents"]) or (not results["metadatas"]):
+        return []
+
+    documents = [
+        document_record(
+            content=content,
+            # 先转为 JSON 字符串，再解析为 dict（处理非 dict 类型）
+            metadata=json.loads(json.dumps(metadata["metadata"])),
+        )
+        for content, metadata in zip(results["documents"][0], results["metadatas"][0])
+    ]
+    return documents
