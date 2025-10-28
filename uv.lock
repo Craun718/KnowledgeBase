@@ -1148,6 +1148,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "pdfplumber" },
     { name = "python-dotenv" },
+    { name = "tqdm" },
     { name = "uvicorn" },
     { name = "volcengine-python-sdk", extra = ["ark"] },
 ]
@@ -1162,6 +1163,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=1.0.1" },
     { name = "pdfplumber", specifier = ">=0.11.7" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "uvicorn", specifier = ">=0.38.0" },
     { name = "volcengine-python-sdk", extras = ["ark"], specifier = ">=4.0.29" },
 ]

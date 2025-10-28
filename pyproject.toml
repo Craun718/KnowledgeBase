@@ -15,4 +15,5 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "uvicorn>=0.38.0",
     "volcengine-python-sdk[ark]>=4.0.29",
+    "tqdm>=4.67.1",
 ]

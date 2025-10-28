@@ -7,9 +7,12 @@ from chromadb import Documents, EmbeddingFunction, Embeddings
 from chromadb.api.types import Embedding
 import numpy as np
 from utils.embedding import create_embedding
+from utils.cache import cache
 
 
 class siliconflow_embeddingFunction(EmbeddingFunction):
+
+    @cache.memoize()
     def __call__(self, input: Documents) -> Embeddings:
         embeddings: List[Embedding] = []
         for doc in input:
@@ -41,7 +44,6 @@ class document_record:
 def insert_embedding(doc: document_record) -> str:
     existing_docs = collection.get(where={"metadata": {"$eq": doc.metadata}})
     if existing_docs["ids"]:
-        print("Document already exists in the collection.")
         return existing_docs["ids"][0]
 
     id = str(uuid.uuid4())

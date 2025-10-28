@@ -5,6 +5,7 @@ from langchain_core.documents import Document
 from langchain_community.document_loaders import PDFPlumberLoader
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from tqdm import tqdm
 
 from database import document_record, insert_embedding
 from utils.cache import cache
@@ -46,14 +47,10 @@ def get_splitter_docs(file_path: Path) -> list[Document]:
 
 if __name__ == "__main__":
     splites = get_splitter_docs(pdf_path)
-    for splite in splites:
-
+    for splite in tqdm(splites):
         insert_embedding(
             document_record(
                 content=splite.page_content,
                 metadata=splite.metadata,
             )
         )
-
-        print("插入成功")
-        break  # just test one
