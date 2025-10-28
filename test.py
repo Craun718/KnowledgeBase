@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.documents import Document
@@ -7,7 +8,7 @@ from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
 
-from database import document_record, insert_embedding
+from database import document_record, insert_embedding, similarity_search
 from utils.cache import cache
 
 load_dotenv()
@@ -54,3 +55,11 @@ if __name__ == "__main__":
                 metadata=splite.metadata,
             )
         )
+
+    print("所有切分块已插入到向量数据库中。")
+
+    results = similarity_search(
+        "How many distribution centers does Nike have in the US?"
+    )
+
+    print(json.dumps([doc.__dict__() for doc in results], indent=2, ensure_ascii=False))

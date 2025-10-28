@@ -1,10 +1,11 @@
 import os
+from typing import List
 import requests
 from .cache import cache
 
 
 @cache.memoize()
-def create_embedding(content: str) -> list[float] | None:
+def create_embedding(content: str | List[str]) -> list[float] | None:
     # 1024 dimensions
     url = "https://api.siliconflow.cn/v1/embeddings"
     token = os.getenv("siliconflow_token")
@@ -22,4 +23,9 @@ def create_embedding(content: str) -> list[float] | None:
 
     data = response.json()
 
-    return data["data"][0]["embedding"] if data["data"] else None
+    if isinstance(content, str):
+        return data["data"][0]["embedding"] if data["data"] else None
+    elif isinstance(content, list):
+        return [item["embedding"] for item in data["data"]] if data["data"] else None
+    else:
+        return None
