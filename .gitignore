@@ -14,3 +14,6 @@ wheels/
 tmp/
 database.py
 chroma_db/
+assets/
+
+logs/

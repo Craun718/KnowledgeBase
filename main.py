@@ -1,37 +1,40 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
+from loguru import logger as log
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from routes.file import router as file_router
+from routes.swaggerui import setupSwaggerUI
 
-data_path = Path(__file__).parent / "data"
-files_path = data_path / "files"
+from log import log_init
 
-app = FastAPI()
+log_init()
 
-@app.post("/file/upload/")
-async def upload_file(file: UploadFile = File(...)):
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="No filename provided")
-    if not file.filename.endswith(('.txt', '.pdf')):
-        raise HTTPException(status_code=400, detail="Unsupported file type")
 
-    content = await file.read()
-    with open(files_path.joinpath(file.filename), "wb") as f:
-        f.write(content)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # before the application starts
+    log.info("FastAPI application is starting up...")
+    yield
+    # after the application stops
+    log.info("FastAPI application is shutting down.")
+    pass
 
-    return {"filename": file.filename}
 
-@app.get("/file/download/{filename}")
-async def download_file(filename: str):
-    file_path = files_path.joinpath(filename)
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="File not found")
-    return FileResponse(file_path, media_type="application/octet-stream", filename=filename)
+app = FastAPI(
+    title="KB API",
+    version="1.0.0",
+    description="",
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+)
 
-@app.get("/file/list/")
-async def list_files():
-    files = [f.name for f in files_path.iterdir() if f.is_file()]
-    return {"files": files}
+setupSwaggerUI(app)
+
+app.include_router(file_router, tags=["文件管理"])
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
