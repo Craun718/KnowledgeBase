@@ -1,3 +1,4 @@
+import json
 from typing import List
 import chromadb
 import uuid
@@ -27,14 +28,18 @@ if not collection:
 
 
 class document_record:
-    def __init__(self, text: str, embedding: List[float], metadata: str):
-        self.text = text
-        self.embedding = embedding
-        self.metadata = metadata
+    def __init__(self, content: str, metadata: str | dict):
+        self.content = content
+        if isinstance(metadata, str):
+            self.metadata = metadata
+        elif isinstance(metadata, dict):
+            self.metadata = json.dumps(metadata, ensure_ascii=False)
+        else:
+            raise ValueError("Metadata must be either a string or a dictionary.")
 
 
 def insert_embedding(doc: document_record) -> str:
-    existing_docs = collection.get(where={"metadata.text": doc.metadata})
+    existing_docs = collection.get(where={"metadata": {"$eq": doc.metadata}})
     if existing_docs["ids"]:
         print("Document already exists in the collection.")
         return existing_docs["ids"][0]
@@ -42,8 +47,7 @@ def insert_embedding(doc: document_record) -> str:
     id = str(uuid.uuid4())
     collection.add(
         ids=[id],
-        documents=[doc.text],
-        embeddings=[doc.embedding],
+        documents=[doc.content],
         metadatas=[{"metadata": doc.metadata}],
     )
     return id

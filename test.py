@@ -1,17 +1,13 @@
-import os
 from pathlib import Path
-from diskcache import Cache
 from dotenv import load_dotenv
-import requests
 from langchain_core.documents import Document
 
 from langchain_community.document_loaders import PDFPlumberLoader
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from database import embedding_record, insert_embedding
+from database import document_record, insert_embedding
 from utils.cache import cache
-from utils.embedding import create_embedding
 
 load_dotenv()
 pdf_path = Path("./nke-10k-2023.pdf")
@@ -51,17 +47,13 @@ def get_splitter_docs(file_path: Path) -> list[Document]:
 if __name__ == "__main__":
     splites = get_splitter_docs(pdf_path)
     for splite in splites:
-        embedding = create_embedding(splite.page_content)
-
-        if not embedding:
-            assert False, "embedding 创建失败"
 
         insert_embedding(
-            embedding_record(
-                text=splite.page_content,
-                embedding=embedding,
-                metadata=str(splite.metadata),
+            document_record(
+                content=splite.page_content,
+                metadata=splite.metadata,
             )
         )
+
         print("插入成功")
         break  # just test one
