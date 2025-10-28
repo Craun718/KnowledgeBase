@@ -59,5 +59,5 @@ def log_init():
         format="<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{file: >10}</cyan>:<cyan>{line: <3}</cyan> | <cyan>{function}</cyan> | <level>{message}</level>",
     )
 
-    log.info("Starting BxOCR application...")
+    log.info("Starting application...")
     log.info(f"Logging to file: {log_path}")
