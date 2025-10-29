@@ -61,6 +61,20 @@ class SiliconFlowEmbeddings(LangChainEmbeddings):
         return self.embed_documents([text])[0]
 
 
+class CustomDocument:
+    def __init__(self, content: str, doc_name: str, page_number):
+        self.content = content
+        self.doc_name = doc_name
+        self.page_number = page_number
+
+    def to_dict(self):
+        return {
+            "content": self.content,
+            "doc_name": self.doc_name,
+            "page_number": self.page_number,
+        }
+
+
 # 创建带缓存的 embedding 实例
 underlying_embeddings = SiliconFlowEmbeddings()
 cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
@@ -90,7 +104,12 @@ class DocumentRecord:
             except json.JSONDecodeError:
                 self.metadata = {"text": metadata}
         elif isinstance(metadata, dict):
-            self.metadata = metadata
+            self.metadata = metadata["metadata"] if "metadata" in metadata else metadata
+            if isinstance(self.metadata, str):
+                try:
+                    self.metadata = json.loads(self.metadata)
+                except json.JSONDecodeError:
+                    self.metadata = {"text": self.metadata}
         else:
             raise ValueError("Metadata must be either a string or a dictionary.")
 
