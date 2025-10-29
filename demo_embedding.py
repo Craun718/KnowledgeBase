@@ -1,8 +1,7 @@
-import json
 from pathlib import Path
 from dotenv import load_dotenv
 from tqdm import tqdm
-
+from loguru import logger as log
 
 from database import (
     DocumentRecord,
@@ -30,8 +29,6 @@ if __name__ == "__main__":
             )
 
         # 批量插入，batch_size设为32（API限制）
-        print(f"开始批量插入 {len(docs_to_insert)} 个文档块，batch_size=32")
-        # insert_records_batch(docs_to_insert, batch_size=32)
         insert_records_batch(docs_to_insert, batch_size=32)
 
-        print(f"{file_path.name} 处理并插入完成！")
+        log.debug(f"{file_path.name} 处理并插入完成！")
