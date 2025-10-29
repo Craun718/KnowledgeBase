@@ -60,6 +60,7 @@ async def search_definition_batch(
 
 
 @router.post("/relation")
+@router.post("/relation/batch")
 async def search_relationship(
     query: str = Form(..., description="搜索关键词"),
 ) -> RelationResponse:
