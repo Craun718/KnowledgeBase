@@ -11,7 +11,7 @@ from service.splitter import get_splitter_docs
 
 load_dotenv()
 
-insert_dir = Path("../训练集")
+insert_dir = Path("./data/files")
 file_list = list(insert_dir.glob("*.pdf"))
 
 if __name__ == "__main__":

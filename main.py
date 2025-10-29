@@ -1,23 +1,20 @@
 from contextlib import asynccontextmanager
-from pathlib import Path
 from loguru import logger as log
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile, status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from requests import RequestException
-from requests.exceptions import HTTPError
 from routes.swaggerui import setupSwaggerUI
 from routes.file import router as file_router
 from routes.search import router as search_router
 
 from log import log_init
+from embedding import init_embedding_db
 
 log_init()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # before the application starts
+    # init_embedding_db()
     log.info("FastAPI application is starting up...")
     yield
     # after the application stops

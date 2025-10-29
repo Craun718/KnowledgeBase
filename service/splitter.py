@@ -18,7 +18,7 @@ def get_splitter_docs(file_path: Path) -> list[Document]:
         doc.metadata["source"] = file_path.stem
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=512, chunk_overlap=64, add_start_index=True
+        chunk_size=256, chunk_overlap=32, add_start_index=True
     )
 
     all_splits = text_splitter.split_documents(docs)
