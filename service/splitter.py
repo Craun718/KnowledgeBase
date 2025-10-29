@@ -15,6 +15,7 @@ def get_splitter_docs(file_path: Path) -> list[Document]:
     # 为每个文档页码加1（从1开始计数）
     for doc in docs:
         doc.metadata["page"] += 1
+        doc.metadata["source"] = file_path.name
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=512, chunk_overlap=64, add_start_index=True
