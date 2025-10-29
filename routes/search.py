@@ -73,6 +73,16 @@ async def search_relationship(
         terms = query.split(",")
         log.debug("str:{}", terms)
 
+    # 移除空白项
+    terms = [term.strip() for term in terms if term.strip()]
+
+    # 检查数量是否为2的倍数
+    if len(terms) % 2 != 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Number of terms must be even for relationship search",
+        )
+
     if len(terms) < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -80,8 +90,9 @@ async def search_relationship(
         )
 
     results = []
-    term_pairs = itertools.combinations(terms, 2)
-    for term_pair in term_pairs:
+    # 将词汇两两分组
+    for i in range(0, len(terms), 2):
+        term_pair = (terms[i], terms[i + 1])
         context_docs = extract_docs_has_both_term(term_pair)
         relation_result = extract_term_relation(
             term1=term_pair[0], term2=term_pair[1], docs=context_docs
