@@ -34,7 +34,7 @@ nlp = spacy.load(model_dir)
 target_term_pair = ("海洋灾害", "海洋灾害应急")
 
 
-def extract_docs_has_terms(term_pair: tuple) -> List[DocumentRecord]:
+def extract_docs_has_both_term(term_pair: tuple) -> List[DocumentRecord]:
     """Extract sentences containing both terms from the text."""
     documents = similarity_search(
         f"同时包含{term_pair[0]}和{term_pair[1]}的句子", limit=10
@@ -47,9 +47,6 @@ def extract_docs_has_terms(term_pair: tuple) -> List[DocumentRecord]:
 
     print("Retrieved Documents:")
     print(f"Found {len(results)} documents containing both terms.")
-    for doc in results:
-        print("--------------------")
-        print(f"{doc.content}...")  # 打印前100个字符预览
 
     return results
 
@@ -143,7 +140,7 @@ def extract_term_relation(
 
 if __name__ == "__main__":
     # 步骤1：获取包含两个术语的文档
-    context_docs = extract_docs_has_terms(target_term_pair)
+    context_docs = extract_docs_has_both_term(target_term_pair)
     print(f"用于分析的上下文文档数：{len(context_docs)}")
 
     # 步骤2：提取术语关系
