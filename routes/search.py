@@ -32,6 +32,30 @@ async def search_definition(
     return DefinitionResponse(result=[result])
 
 
+@router.post("/definition/batch")
+async def search_definition_batch(
+    query: str = Form(..., description="搜索关键词（用逗号分隔）"),
+):
+    results = []
+    query.replace("，", ",")
+    for q in query.split(","):
+        data = get_definition(q.strip())
+        if not data:
+            continue
+
+        result: DefinitionResult = DefinitionResult(
+            term=data.term,
+            definition=data.definition.replace("\n", "")
+            .replace(" ", "")
+            .replace("\t", ""),
+            documents=data.documents,
+            page=data.page,
+        )
+        results.append(result)
+
+    return DefinitionResponse(result=results)
+
+
 @router.post("/search/batch")
 async def search(
     # 文件参数
