@@ -38,7 +38,7 @@ async def search_definition(
 @router.post("/definition/batch")
 async def search_definition_batch(
     query: str = Form(..., description="搜索关键词（用逗号分隔）"),
-):
+) -> DefinitionResponse:
     results = []
     query.replace("，", ",")
     for q in query.split(","):
