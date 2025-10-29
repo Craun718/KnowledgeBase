@@ -31,7 +31,6 @@ def extract_term_relation(
         "relationship"的内容要求如下：
         1. 如果为因果关系，回复`1`；
         2. 如果为主从关系，回复`2`；
-        3. 不属于这两种关系，回复`0`。
     """
     # 1. 处理上下文：拼接文档内容作为分析依据
     if not len(docs):
@@ -77,19 +76,15 @@ def extract_term_relation(
     "relationship"的内容要求如下：
     1. 如果为因果关系，回复`1`；
     2. 如果为主从关系，回复`2`；
-    3. 不属于这两种关系，回复`0`。
     
     "reason"字段的内容要求如下：
-    1. 如果关系为因果关系或主从关系，请在"reason"中填入引入文档的原文
-    2. 如果关系为非因果非主从关系，请在"reason"中填入空字符串。
+    1. 请在"reason"中填入引入文档的原文解释
 
     "documents"的内容要求如下：
-    1. 如果关系为因果关系或主从关系，请在"documents"中填入引入文档的标题；
-    2. 如果关系为非因果非主从关系，请将"documents"设为空字符串。
+    1. 请在"documents"中填入引入文档的标题；
 
     "page"的内容要求如下：
-    1. 如果关系为因果关系或主从关系，请在"page"中填入引入文档的页码；
-    2. 如果关系为非因果非主从关系，请将"page"设为0。
+    1. 请在"page"中填入引入文档的页码；
 """
 
     # print(message)
@@ -119,7 +114,7 @@ def extract_term_relation(
         term2=term2,
         relation=relationStr,
         reason=result.get("reason", ""),
-        documents=result.get("documents", ""),
+        documents=result.get("documents", "").replace(".pdf", "").replace("/T", "_T_"),
         page=result.get("page", 0),
     )
 

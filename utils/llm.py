@@ -1,6 +1,7 @@
 import os
-from fastapi import HTTPException, status
 import requests
+from loguru import logger as log
+from fastapi import HTTPException, status
 
 
 def llm_query(content: str) -> str:
@@ -30,7 +31,7 @@ def llm_query(content: str) -> str:
 
     result = response.json()["choices"][0]["message"]["content"]
 
-    print("Raw LLM Response:", result)
+    log.debug("Raw LLM Response:", result)
 
     return result
 

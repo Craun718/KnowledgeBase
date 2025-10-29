@@ -5,18 +5,14 @@ import os
 from fastapi import HTTPException, status
 import requests
 
-import numpy as np
 from dotenv import load_dotenv
 
 import chromadb
-from chromadb import Documents, EmbeddingFunction, Embeddings
 from chromadb.errors import NotFoundError
-from chromadb.api.types import Embedding
 from langchain_classic.embeddings import CacheBackedEmbeddings
 from langchain_classic.embeddings.base import Embeddings as LangChainEmbeddings
 from langchain_classic.storage import LocalFileStore
 from tqdm import tqdm
-from utils.cache import cache
 from utils.hash import make_hash
 
 load_dotenv()
@@ -207,7 +203,7 @@ def similarity_search(query: str, limit: int = 5) -> List[DocumentRecord]:
 
 def extract_docs_has_single_term(term: str) -> List[DocumentRecord]:
     """Extract sentences containing the term from the text."""
-    documents = similarity_search(f"包含{term}的句子", limit=10)
+    documents = similarity_search(f"`{term}`", limit=20)
 
     results: List[DocumentRecord] = []
     for doc in documents:
@@ -222,9 +218,7 @@ def extract_docs_has_single_term(term: str) -> List[DocumentRecord]:
 
 def extract_docs_has_both_term(term_pair: tuple) -> List[DocumentRecord]:
     """Extract sentences containing both terms from the text."""
-    documents = similarity_search(
-        f"同时包含{term_pair[0]}和{term_pair[1]}的句子", limit=10
-    )
+    documents = similarity_search(f"`{term_pair[0]}`和`{term_pair[1]}`", limit=20)
 
     results: List[DocumentRecord] = []
     for doc in documents:

@@ -66,12 +66,8 @@ def extract_term_definition(
 
     # 回答的要求:
     "definition"字段请直接回复术语的定义。
-    1. 如果能在文档中找到定义
     "documents"字段请回复最主要的文档的标题。
     "page"字段请回复依据的页码。
-    2. 如果文档中没有找到定义
-    "documents"字段请回复空字符串。
-    "page"字段请回复0。
 """
 
     # print(message)

@@ -106,7 +106,9 @@ async def search_relationship(
                 term2=relation_result.term2,
                 relation=relation_result.relation,
                 reason=relation_result.reason,
-                documents=relation_result.documents,
+                documents=relation_result.documents.replace(".pdf", "").replace(
+                    "/T", "_T_"
+                ),
                 page=relation_result.page,
             )
         )
