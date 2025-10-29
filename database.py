@@ -193,3 +193,18 @@ def similarity_search(query: str, limit: int = 5) -> List[DocumentRecord]:
         for _, content, metadata in items
     ]
     return documents
+
+
+def extract_docs_has_single_term(term: str) -> List[DocumentRecord]:
+    """Extract sentences containing the term from the text."""
+    documents = similarity_search(f"包含{term}的句子", limit=10)
+
+    results: List[DocumentRecord] = []
+    for doc in documents:
+        if term in doc.content:
+            results.append(doc)
+
+    print("Retrieved Documents:")
+    print(f"Found {len(results)} documents containing the term.")
+
+    return results
