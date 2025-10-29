@@ -55,7 +55,7 @@ def extract_term_relation(
     term1: str,
     term2: str,
     docs: List[DocumentRecord],
-) -> TermRelation:
+) -> TermRelation | None:
     """
     提取两个术语的关系
 
@@ -77,7 +77,10 @@ def extract_term_relation(
         3. 不属于这两种关系，回复`0`。
     """
     # 1. 处理上下文：拼接文档内容作为分析依据
-    log.debug(f"用于关系分析的上下文文档数：{len(docs)}")
+    if not len(docs):
+        log.warning("No documents provided for term relation extraction.")
+        return None
+
     log.debug(json.dumps(docs[0].metadata, ensure_ascii=False, indent=2))
 
     context_docs = [

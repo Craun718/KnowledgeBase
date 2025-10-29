@@ -5,7 +5,7 @@ from database import CustomDocument, DocumentRecord, similarity_search
 from utils.llm import llm_query
 
 
-word = "海洋灾害应急"
+word = "原神"
 
 
 class TermDefinition:
@@ -34,7 +34,7 @@ def extract_docs_has_single_term(term: str) -> List[DocumentRecord]:
 def extract_term_definition(
     term: str,
     docs: List[DocumentRecord],
-) -> TermDefinition:
+) -> TermDefinition | None:
     """
     提取术语的定义
 
@@ -52,7 +52,10 @@ def extract_term_definition(
         }
     """
     # 1. 处理上下文：拼接文档内容作为分析依据
-    log.debug(f"用于关系分析的上下文文档数：{len(docs)}")
+    if not len(docs):
+        log.warning("No documents provided for term definition extraction.")
+        return None
+
     log.debug(json.dumps(docs[0].metadata, ensure_ascii=False, indent=2))
 
     context_docs = [
@@ -88,8 +91,12 @@ def extract_term_definition(
 
     # 回答的要求:
     "definition"字段请直接回复术语的定义。
+    1. 如果能在文档中找到定义
     "documents"字段请回复依据的文档标题。
     "page"字段请回复依据的页码。
+    2. 如果文档中没有找到定义
+    "documents"字段请回复空字符串。
+    "page"字段请回复0。
 """
 
     # print(message)
