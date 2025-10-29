@@ -3,8 +3,10 @@ from pathlib import Path
 from loguru import logger as log
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
-from routes.file import router as file_router
+from fastapi.middleware.cors import CORSMiddleware
 from routes.swaggerui import setupSwaggerUI
+from routes.file import router as file_router
+from routes.search import router as search_router
 
 from log import log_init
 
@@ -30,9 +32,15 @@ app = FastAPI(
     redoc_url=None,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+)
+
 setupSwaggerUI(app)
 
 app.include_router(file_router, tags=["文件管理"])
+app.include_router(search_router, tags=["知识检索"])
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,10 +1,38 @@
 import json
-from fastapi import HTTPException, UploadFile, File, Form, APIRouter, status
+from fastapi import HTTPException, Query, UploadFile, File, Form, APIRouter, status
+
+from model import DefinitionResponse, DefinitionResult
+from service.search import get_definition
 
 router = APIRouter()
 
 
-@router.post("/search")
+@router.post("/definition")
+async def search_definition(
+    query: str = Form(..., description="搜索关键词"),
+) -> DefinitionResponse:
+    if not query:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Type parameter is required"
+        )
+
+    data = get_definition(query)
+    if not data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="No definition found"
+        )
+
+    result: DefinitionResult = DefinitionResult(
+        term=data.term,
+        definition=data.definition.replace("\n", "").replace(" ", "").replace("\t", ""),
+        documents=data.documents,
+        page=data.page,
+    )
+
+    return DefinitionResponse(result=[result])
+
+
+@router.post("/search/batch")
 async def search(
     # 文件参数
     file: UploadFile = File(...),
