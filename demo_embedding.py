@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 
 from database import (
-    document_record,
+    DocumentRecord,
     insert_records_batch,
 )
 from service.splitter import get_splitter_docs
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         docs_to_insert = []
         for splite in splites:
             docs_to_insert.append(
-                document_record(
+                DocumentRecord(
                     content=splite.page_content,
                     metadata=splite.metadata,
                 )

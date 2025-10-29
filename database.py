@@ -79,38 +79,41 @@ except NotFoundError:
     collection = chroma_client.create_collection(name="my_collection")
 
 
-class document_record:
+class DocumentRecord:
+    metadata: dict
+
     def __init__(self, content: str, metadata: str | dict):
         self.content = content
         if isinstance(metadata, str):
-            self.metadata = metadata
+            try:
+                self.metadata = json.loads(metadata)
+            except json.JSONDecodeError:
+                self.metadata = {"text": metadata}
         elif isinstance(metadata, dict):
-            self.metadata = json.dumps(metadata, ensure_ascii=False)
+            self.metadata = metadata
         else:
             raise ValueError("Metadata must be either a string or a dictionary.")
 
     def __dict__(self):
         return {
             "content": self.content,
-            "metadata": json.loads(self.metadata),
+            "metadata": self.metadata,
         }
 
 
-def insert_record(doc: document_record) -> str:
+def insert_record(doc: DocumentRecord) -> str:
     id = str(uuid.uuid4())
     doc_embedding = cached_embeddings.embed_query(doc.content)
     collection.add(
         ids=[id],
         documents=[doc.content],
         embeddings=[doc_embedding],
-        metadatas=[{"metadata": doc.metadata}],
+        metadatas=[doc.metadata],
     )
     return id
 
 
-def insert_records_batch(
-    docs: List[document_record], batch_size: int = 32
-) -> List[str]:
+def insert_records_batch(docs: List[DocumentRecord], batch_size: int = 32) -> List[str]:
     """批量插入文档记录"""
     all_ids = []
 
@@ -131,7 +134,7 @@ def insert_records_batch(
             ids=batch_ids,
             documents=batch_contents,
             embeddings=batch_embeddings,  # type: ignore
-            metadatas=[{"metadata": doc.metadata} for doc in batch],
+            metadatas=[doc.metadata for doc in batch],
         )
 
         all_ids.extend(batch_ids)
@@ -139,22 +142,35 @@ def insert_records_batch(
     return all_ids
 
 
-def similarity_search(query: str, limit: int = 5) -> List[document_record]:
+def similarity_search(query: str, limit: int = 5) -> List[DocumentRecord]:
     # 使用缓存的 embeddings 生成查询向量
     query_embedding = cached_embeddings.embed_query(query)
-    results = collection.query(
+    query_results = collection.query(
         query_embeddings=[query_embedding],
         n_results=limit,
     )
-    if (not results["documents"]) or (not results["metadatas"]):
+    if (not query_results["documents"]) or (not query_results["metadatas"]):
         return []
 
+    documents_list = query_results["documents"][0]
+    metadatas_list = query_results["metadatas"][0]
+
+    if "distances" in query_results and query_results["distances"]:
+        distances = query_results["distances"][0]
+        # 创建 (distance, content, metadata) 的列表
+        items = list(zip(distances, documents_list, metadatas_list))
+        # 按距离升序排序（距离越小，越相似）
+        items.sort(key=lambda x: x[0], reverse=True)
+    else:
+        # 如果没有距离信息，直接使用原始顺序
+        items = list(zip([0] * len(documents_list), documents_list, metadatas_list))
+
+    # 创建 DocumentRecord 列表
     documents = [
-        document_record(
+        DocumentRecord(
             content=content,
-            # 先转为 JSON 字符串，再解析为 dict（处理非 dict 类型）
-            metadata=json.loads(json.dumps(metadata["metadata"])),
+            metadata=dict(metadata),  # 转换为 dict
         )
-        for content, metadata in zip(results["documents"][0], results["metadatas"][0])
+        for _, content, metadata in items
     ]
     return documents
