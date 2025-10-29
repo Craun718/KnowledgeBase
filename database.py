@@ -218,3 +218,20 @@ def extract_docs_has_single_term(term: str) -> List[DocumentRecord]:
     print(f"Found {len(results)} documents containing the term.")
 
     return results
+
+
+def extract_docs_has_both_term(term_pair: tuple) -> List[DocumentRecord]:
+    """Extract sentences containing both terms from the text."""
+    documents = similarity_search(
+        f"同时包含{term_pair[0]}和{term_pair[1]}的句子", limit=10
+    )
+
+    results: List[DocumentRecord] = []
+    for doc in documents:
+        if term_pair[0] in doc.content and term_pair[1] in doc.content:
+            results.append(doc)
+
+    print("Retrieved Documents:")
+    print(f"Found {len(results)} documents containing both terms.")
+
+    return results
