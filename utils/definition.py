@@ -81,6 +81,7 @@ def extract_term_definition(
     tr = TermDefinition(
         term=term,
         definition=result.get("definition", ""),
+        reason=result.get("reason", ""),
         documents=result.get("documents", ""),
         page=result.get("page", 0),
     )
