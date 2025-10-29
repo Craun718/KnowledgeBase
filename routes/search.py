@@ -68,7 +68,7 @@ async def search_relationship(
         log.debug("json:{}", terms)
 
     except json.JSONDecodeError:
-        query.replace("，", ",")
+        query = query.replace("，", ",")
         terms = query.split(",")
         log.debug("str:{}", terms)
 
