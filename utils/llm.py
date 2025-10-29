@@ -1,4 +1,5 @@
 import os
+from fastapi import HTTPException, status
 import requests
 
 
@@ -21,7 +22,11 @@ def llm_query(content: str) -> str:
     }
 
     response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
+    if not response.ok:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=f"LLM API request failed: {response.text}",
+        )
 
     result = response.json()["choices"][0]["message"]["content"]
 

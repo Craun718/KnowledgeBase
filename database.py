@@ -2,6 +2,7 @@ import json
 from typing import List
 import uuid
 import os
+from fastapi import HTTPException, status
 import requests
 
 import numpy as np
@@ -47,7 +48,16 @@ class SiliconFlowEmbeddings(LangChainEmbeddings):
 
         response = requests.post(url, json=payload, headers=headers)
         if not response.ok:
-            raise Exception(response.text)
+            if response.status_code == 401:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid API key for Embedding service",
+                )
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Embedding API request failed with status code {response.status_code}",
+            )
 
         data = response.json()
         message = data.get("message")

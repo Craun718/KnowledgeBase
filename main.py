@@ -4,7 +4,8 @@ from loguru import logger as log
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from requests import HTTPError
+from requests import RequestException
+from requests.exceptions import HTTPError
 from routes.swaggerui import setupSwaggerUI
 from routes.file import router as file_router
 from routes.search import router as search_router
@@ -37,21 +38,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
 )
-
-
-@app.exception_handler(Exception)
-async def generic_exception_handler(request: Request, exc: Exception):
-    if isinstance(exc, HTTPError):
-        if str(exc).startswith("401"):
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": str("请填写api token")},
-            )
-
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"detail": str(exc)},
-        )
 
 
 setupSwaggerUI(app)
