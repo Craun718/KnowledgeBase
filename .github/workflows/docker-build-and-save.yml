@@ -9,8 +9,8 @@ jobs:
     name: Build image, save and upload
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: knowledge-base:${{ format('{0:yyyyMMdd-HHmmss}', github.event.repository.updated_at) }}
-      IMAGE_TAR: image-${{ format('{0:yyyyMMdd-HHmmss}', github.event.repository.updated_at) }}.tar.gz
+      IMAGE_NAME: knowledge-base:${{ github.sha }}
+      IMAGE_TAR: image-${{ github.sha }}.tar.gz
 
     steps:
       - name: Checkout repository (with submodules)
@@ -38,5 +38,5 @@ jobs:
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docker-image-${{  format('{0:yyyyMMdd-HHmmss}', github.event.repository.updated_at) }}
+          name: docker-image-${{ github.sha }}
           path: ${{ env.IMAGE_TAR }}
