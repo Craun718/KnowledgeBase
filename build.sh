@@ -8,7 +8,7 @@ echo "开始构建知识库应用..."
 
 # 构建Docker镜像
 echo "正在构建Docker镜像..."
-docker build -t knowledgebase:latest .
+docker build -t knowledgebase:latest . --no-cache
 
 echo "Docker镜像构建完成！"
 
