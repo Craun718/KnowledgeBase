@@ -22,5 +22,4 @@ def get_splitter_docs(file_path: Path) -> list[Document]:
     )
 
     all_splits = text_splitter.split_documents(docs)
-    log.debug(f"已将文件 {file_path.name} 分割成 {len(all_splits)} 个文档块。")
     return all_splits

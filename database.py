@@ -142,9 +142,7 @@ def insert_records_batch(docs: List[DocumentRecord], batch_size: int = 32) -> Li
     """批量插入文档记录"""
     all_ids = []
 
-    for i in tqdm(
-        range(0, len(docs), batch_size), desc="Inserting batches", unit="batch"
-    ):
+    for i in range(0, len(docs), batch_size):
         batch = docs[i : i + batch_size]
 
         # 批量生成ID
