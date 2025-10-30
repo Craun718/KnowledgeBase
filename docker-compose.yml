@@ -7,14 +7,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8010:8010"
-    volumes:
-      # 持久化数据
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - ./chroma_db:/app/chroma_db
-      - ./models:/app/models
-      # 缓存目录
-      - kb-cache:/app/tmp/cache
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped

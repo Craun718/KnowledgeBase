@@ -17,25 +17,6 @@ load_dotenv()
 insert_dir = Path("./data/files")
 file_list = list(insert_dir.glob("*.pdf"))
 
-if __name__ == "__main__":
-    for file_path in tqdm(file_list):
-        splites = get_splitter_docs(file_path)
-
-        # 准备批量插入的文档记录
-        docs_to_insert = []
-        for splite in splites:
-            docs_to_insert.append(
-                DocumentRecord(
-                    content=splite.page_content,
-                    metadata=splite.metadata,
-                )
-            )
-
-        # 批量插入，batch_size设为32（API限制）
-        insert_records_batch(docs_to_insert, batch_size=32)
-
-        log.debug(f"{file_path.name} 处理并插入完成！")
-
 
 def process_single_pdf(file_path: Path) -> Tuple[Path, List[DocumentRecord]]:
     """处理单个PDF文件，返回文件路径和文档记录列表
@@ -118,3 +99,7 @@ def load_all_pdfs(max_workers: int = 4):
                     pbar.update(1)
 
     log.info("所有PDF文件处理完成！")
+
+
+if __name__ == "__main__":
+    load_all_pdfs()

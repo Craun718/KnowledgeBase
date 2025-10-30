@@ -47,8 +47,8 @@ tmp/cache/
 *.temp
 
 # Database files (should be mounted as volumes)
-chroma_db/
-*.sqlite3
+# chroma_db/
+# *.sqlite3
 
 # Model files (should be mounted or downloaded separately)
 models/

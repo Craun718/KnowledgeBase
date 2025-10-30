@@ -27,6 +27,12 @@ jobs:
       - name: Check submodule status
         run: git submodule status --recursive && ls -la ./kb-frontend
 
+      - name: Load PDF data
+        run: |
+          pip install uv
+          uv sync
+          uv run load_pdf.py
+
       - name: Set up Docker buildx (optional)
         uses: docker/setup-buildx-action@v3
 

@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     log.info("FastAPI application is starting up...")
     # 在应用对外可用之前，先在后台线程执行 PDF 加载与入库操作
     try:
-        await asyncio.get_running_loop().run_in_executor(None, load_all_pdfs)
+        # await asyncio.get_running_loop().run_in_executor(None, load_all_pdfs)
         log.info("load_pdf completed before FastAPI startup.")
     except Exception as e:
         log.exception("Error while running load_all_pdfs before startup: {}", e)

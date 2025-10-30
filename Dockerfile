@@ -1,3 +1,4 @@
+# 阶段1: 构建前端
 FROM node:20-slim AS frontend-builder
 
 # 镜像元数据
