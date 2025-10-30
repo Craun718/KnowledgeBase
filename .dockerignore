@@ -1,0 +1,59 @@
+# Git
+.git
+.gitignore
+.gitmodules
+
+# Documentation
+README.md
+*.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+.tox/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Logs
+logs/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node.js (will be handled in multi-stage build)
+kb-frontend/node_modules/
+kb-frontend/dist/
+kb-frontend/.rsbuild/
+
+# Temporary files
+tmp/cache/
+*.tmp
+*.temp
+
+# Database files (should be mounted as volumes)
+chroma_db/
+*.sqlite3
+
+# Model files (should be mounted or downloaded separately)
+models/
+
+# Development files
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile.dev
