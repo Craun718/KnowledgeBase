@@ -1,0 +1,1 @@
+7z a -t7z sourcecode.7z * -mx9 -m0=lzma2 -ms=on  -xr!sourcecode.7z -xr!".git" -xr!".github" -xr!logs -xr!".gitignore" -xr!".gitmodules" -xr!resource -xr!tmp -xr!logs -xr!*__pycache__* -xr!*venv -xr!chroma_db  -xr!dist
