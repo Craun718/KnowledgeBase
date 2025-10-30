@@ -12,15 +12,22 @@ jobs:
       IMAGE_TAR: image-${{ github.sha }}.tar.gz
 
     steps:
-      - name: Checkout repository (with submodules)
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Ensure submodules are initialized & updated recursively
-          submodules: 'recursive'
-          # Fetch full history so submodules can be checked out correctly
+          # Fetch full history to allow submodule operations later
           fetch-depth: 0
-          # Use the default GITHUB token to access private submodules if needed
-          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Initialize and update submodules (manual)
+        # Run git submodule manually instead of using actions/checkout submodules option
+        run: |
+          # Ensure submodule .gitmodules syncs remote URLs (useful if URLs were rewritten)
+          git submodule sync --recursive || true
+          # Initialize and update all submodules recursively
+          git submodule update --init --recursive
+          # Print submodule status for debugging in Actions logs
+          git submodule status --recursive
+        shell: bash
 
       - name: Set up Docker buildx (optional)
         uses: docker/setup-buildx-action@v3
