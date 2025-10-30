@@ -1,6 +1,7 @@
 name: Build Docker and save artifact
 
 on:
+  workflow_dispatch:
   push: {}
 
 jobs:
