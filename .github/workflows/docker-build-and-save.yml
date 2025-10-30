@@ -1,8 +1,11 @@
 name: Build Docker and save artifact
 
 on:
+  push: 
+    branches:
+      - "**"
   workflow_dispatch:
-  push: {}
+
 
 jobs:
   build-and-save:
