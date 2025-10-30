@@ -1,0 +1,1 @@
+docker run -p 8010:8010 --name knowledge-base-container knowledge-base
